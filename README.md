@@ -1,9 +1,9 @@
 # Inteligencia Artificial
 
-## Trabajo Practico numero 1
+## Trabajo Practico Nro 1
 
-### Resolver el 8-puzzle
+### - Resolver el 8-puzzle
 
+## Trabajo Practico Nro 2
 
-
-### Modelo del perceptron simple
+### - Modelo del perceptron simple

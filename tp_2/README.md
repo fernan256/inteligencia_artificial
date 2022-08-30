@@ -9,7 +9,16 @@
 
 ### Uso
 
-#### Ejecutar
+#### 1- Ejecutar OR
 ```
-python main.py
+python perceptron.py -or
+```
+#### 2- Ejecutar AND
+```
+python perceptron.py -and
+```
+
+#### 3- Ejecutar XOR
+```
+python perceptron.py -xor
 ```

@@ -46,9 +46,9 @@ if __name__ == "__main__":
 		Utils.represent_board(bfsSolution, numberOfMovements)
 
 	elif do_birectional_search:
-		bfsSolution, numberOfMovements = puzzle.biderecionalMethod(randomMatrix, goalState)
+		start, goal, numberOfMovements = puzzle.biderecionalMethod(randomMatrix, goalState)
 		print("------------- Resultado -------------")
 		if max_movements:
 				max_movemnets_to_send = int(max_movements)
 		Utils.represent_board(randomMatrix, max_movemnets_to_send)
-		Utils.represent_board(bfsSolution, numberOfMovements)
+		Utils.represent_board_bidirectional(start, goal, numberOfMovements)

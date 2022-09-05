@@ -14,7 +14,7 @@ def getInitialWeights():
 
 def training(desired_ouput, Lr, A, B):
   w0,w1,w2 = getInitialWeights()
-  print(w0, w1, w2)
+  print(f"w0: {w0}, w1: {w1}, w2: {w2}")
   count = 0
   error = True
   errorValue = 0
@@ -35,6 +35,7 @@ def training(desired_ouput, Lr, A, B):
         count += 1
       else:
         error = False
+      print(f"Iteraciones: {count}")
   return count, y, real_output, errorValue
 
 

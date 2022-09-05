@@ -17,7 +17,6 @@ class Node():
 				return None
 
 		if(move == "moveLeft"):
-
 			if idx_zero not in [2, 5, 8]:
 				temp = state[idx_zero + 1]
 				state[idx_zero + 1] = state[idx_zero]

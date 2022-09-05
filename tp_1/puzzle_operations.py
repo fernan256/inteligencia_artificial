@@ -37,24 +37,51 @@ class Puzzle():
 		start = tuple(start)
 		goal = tuple(goal)
 
-		visitados = set()
-		frontera = deque()
-		frontera.append(bfs.Node(start, None, None))
+		checked = set()
+		nodesExpanded = deque()
+		nodesExpanded.append(bfs.Node(start, None, None))
 		count = 0
-		while frontera:
+		while nodesExpanded:
 			count += 1
-			nodo = frontera.popleft()
+			nodo = nodesExpanded.popleft()
 
-			if tuple(nodo.currentState) not in visitados:
-				visitados.add(tuple(nodo.currentState))
+			if tuple(nodo.currentState) not in checked:
+				checked.add(tuple(nodo.currentState))
 			else:
 				continue
 			if nodo.currentState == goal:
 				return list(nodo.currentState), count
 			else:
-				frontera.extend(nodo.expandNode())
+				nodesExpanded.extend(nodo.expandNode())
 		else:
 			return [],count
 
 	def biderecionalMethod(self, start, goal):
-		pass
+		start = tuple(start)
+		goal = tuple(goal)
+
+		checkedStart = set()
+		checkedGoal = set()
+		nodesExpandedFromStart = deque()
+		nodesExpandedFromGoal = deque()
+		nodesExpandedFromStart.append(bfs.Node(start, None, None))
+		nodesExpandedFromGoal.append(bfs.Node(goal, None, None))
+		count = 0
+
+		while nodesExpandedFromStart and nodesExpandedFromGoal:
+			count += 1
+			nodeStart = nodesExpandedFromStart.popleft()
+			nodeGoal = nodesExpandedFromGoal.popleft()
+			nodesExpandedFromGoal.extend(nodeGoal.expandNode())
+			nodesExpandedFromStart.extend(nodeStart.expandNode())
+			for startNodes in nodesExpandedFromStart:
+				for goalNodes in nodesExpandedFromGoal:
+					print(f"startNodes.currentState: {startNodes.currentState}")
+					print(f"goalNodes.currentState: {goalNodes.currentState}")
+					if startNodes.currentState == goalNodes.currentState:
+						return list(nodeStart.currentState), list(nodeGoal.currentState), count
+					else:
+						checkedStart.add(tuple(nodeStart.currentState))
+						checkedGoal.add(tuple(nodeGoal.currentState))
+		else:
+			return [],count

@@ -24,7 +24,7 @@ def getX(inputs, weights):
   return x
 
 
-def train(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_time_real_outputs):
+def train(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_time_real_outputs, all_time_weights):
   real_output_response = [1] * 4
   for i in range(len(desired_ouput)):
     sum_x = getX(inputs[i], weights)
@@ -38,12 +38,13 @@ def train(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_time_
     for j in range(len(weights)):
       deltaX = Lr * inputs[i][j] * delta_calculo
       weights[j] = weights[j] + deltaX
-  return errors, weights, real_output_response, all_time_errors, all_time_real_outputs
+      all_time_weights[j].append(weights[j])
+  return errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights
 
 
-def createGraph(errors):  
-  x = np.arange(0, len(errors))
-  y = errors
+def createGraph(elements):  
+  x = np.arange(0, len(elements))
+  y = elements
 
   fig, ax = plt.subplots()
   ax.plot(x, y)
@@ -66,12 +67,13 @@ def main(desired_ouput, Lr, inputs):
   errors = [0] * 4
   all_time_errors = []
   all_time_real_outputs = []
+  all_time_weights = [[],[],[]]
   while True:
     count += 1
-    errors, weights, real_output_response, all_time_errors, all_time_real_outputs = train(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_time_real_outputs)
+    errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights = train(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_time_real_outputs, all_time_weights)
     err = CheckForLess(errors, 0.1)
     if err:
-      return errors, weights, real_output_response, all_time_errors, all_time_real_outputs, count
+      return errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights, count
 
 
 if __name__ == "__main__":
@@ -105,7 +107,7 @@ if __name__ == "__main__":
   elif xorOPtion:
     gateToLearn = xorGateOutput
   
-  errors, weights, real_output_response, all_time_errors, all_time_real_outputs, count = main(gateToLearn, learning_rate, inputs)
+  errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights, count = main(gateToLearn, learning_rate, inputs)
   
 
   print(f"Iteraciones: {count}")
@@ -113,4 +115,5 @@ if __name__ == "__main__":
   print(f"Salida Real: {real_output_response}")
   print(f"Errores finales: {errors}")
   createGraph(all_time_errors)
-  # createGraph(all_time_real_outputs)
+  for elem in all_time_weights:
+    createGraph(elem)

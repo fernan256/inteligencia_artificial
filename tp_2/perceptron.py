@@ -5,7 +5,7 @@ import numpy as np
 import random
 
 
-def getInitialWeights():
+def get_initial_weights():
   # w0 = float.__round__(random.random(),2)
   # w1 = float.__round__(random.random(),2)
   # w2 = float.__round__(random.random(),2)
@@ -17,7 +17,7 @@ def getInitialWeights():
   return weights
 
 
-def getX(inputs, weights):
+def get_x(inputs, weights):
   x = 0
   for index, input in enumerate(inputs):
     x += input * weights[index]
@@ -27,7 +27,7 @@ def getX(inputs, weights):
 def training(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_time_real_outputs, all_time_weights):
   real_output_response = [1] * 4
   for i in range(len(desired_ouput)):
-    sum_x = getX(inputs[i], weights)
+    sum_x = get_x(inputs[i], weights)
     real_output = 1 / (1 + math.exp(-sum_x))
     real_output_response[i] = real_output
     all_time_real_outputs.append(real_output)
@@ -42,7 +42,7 @@ def training(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_ti
   return errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights
 
 
-def createGraph(elements,title):  
+def create_graph(elements,title):  
   x = np.arange(0, len(elements))
   y = elements
 
@@ -54,7 +54,7 @@ def createGraph(elements,title):
   plt.show()
 
 
-def CheckForLess(errorList, tolerance):
+def check_error(errorList, tolerance):
   sum_err = 0
   for x in errorList:
     sum_err += abs(x)
@@ -65,7 +65,7 @@ def CheckForLess(errorList, tolerance):
 
 def main(desired_ouput, Lr, inputs):
   count = 0
-  weights = getInitialWeights()
+  weights = get_initial_weights()
 
   errors = [0] * 4
   all_time_errors = []
@@ -74,7 +74,7 @@ def main(desired_ouput, Lr, inputs):
   while True:
     count += 1
     errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights = training(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_time_real_outputs, all_time_weights)
-    err = CheckForLess(errors, 0.1)
+    err = check_error(errors, 0.1)
     if err:
       return errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights, count
 
@@ -116,6 +116,6 @@ if __name__ == "__main__":
   print(f"Pesos finales: {weights}")
   print(f"Salida Real: {real_output_response}")
   print(f"Errores finales: {errors}")
-  createGraph(all_time_errors,"Errores")
+  create_graph(all_time_errors,"Errores")
   for idx, elem in enumerate(all_time_weights):
-    createGraph(elem,f"w{idx}")
+    create_graph(elem,f"w{idx}")

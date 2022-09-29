@@ -1,6 +1,6 @@
 # Inteligencia Artificial
 
-## Trabajo Practico numero 2
+## Trabajo Practico numero 3
 
 ### Modelo del perceptron multicapa
 #### 1. Programar un perceptron para que se comporte como una compuerta AND

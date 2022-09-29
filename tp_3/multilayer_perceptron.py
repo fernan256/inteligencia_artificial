@@ -7,132 +7,88 @@ import numpy as np
 
 def get_x(inputs, weights_val):
   x = 0
-  # print(f"i::: {inputs}")
-  # print(f"w:::: {weights_val}")
   for index, input in enumerate(inputs):
-    # print(inputs)
-    # print(weights_val)
     x += input * weights_val[index]
-  # print(f"x: {x}")
   real_output = 1 / (1 + math.exp(-x))
-  print(f"real_output1111: {real_output}")
   return real_output
 
-# def first_percep_lin(gateToLearn, inputs):
-#   print("first inputs")
-#   weightsL1 = weights.first_line_1_wights_values()
-#   weightsL2 = weights.first_line_2_wights_values()
-#   second_inputs = []
-#   for i in range(4):
-#     first_res = get_x(inputs[i], weightsL1)
-#     second_res = get_x(inputs[i], weightsL2)
-#     second_inputs.append([1,first_res,second_res])
-#   return second_inputs
 
-def second_percep_lin(inputs, weidghts_to_use):
-  # print(f"seconds inputs11111:::::::::: {inputs}")
-  print(f"seconds inputs22222:::::::::: {weidghts_to_use}")
+def hidden_layer(inputs, weidghts_to_use):
   first_line_outputs = [1]
-  temp1 = [1]
-  # for i in range(4):
   for i in range(len(weidghts_to_use)):
     responses = get_x(inputs, weidghts_to_use[i])
-    # print(f"responses: {responses}")
-    # temp1.append(responses)
-    # if(len(temp1) == 3):
     first_line_outputs.append(responses)
-      # temp1 = [1]
-  # print(f"first_line_outputs: {first_line_outputs}")
   return first_line_outputs
 
 
-def third_percep_lin(gateToLearn, inputs, outs):
-  print(f"thirds inputs {inputs}")
+def out_layer(gateToLearn, inputs, output_weidgths):
   final = 0
   outputs = []
-  # for i in range(1):
-  # print(f"bbbbbb: {inputs}")
-  for a in range(len(outs)):
-    final = get_x(inputs, outs[a])
-    error = gateToLearn[a] - final
-    print(f"final: {final}")
-    outputs.append(final)
-    deltaF = final * ( 1 - final) * error
-
-  errors_line = []
-  new_wiedths = []
-  # print(f"outs:: {outs}{inputs} ")
-  for i in range(len(inputs)):
-    # for j in range(len(outs[0])):
-    # print(f"1212121: {len(outs)}")
-    deltaW = 0.1 * inputs[i] * deltaF
-    # print(f"deltaW1::: {deltaW}")
-    # print(f" outs[i][j]: { outs[i][j]}")
-    weightsValues = outs[0][i] + deltaW
-    # print(f"newwieght::: {weightsValues}")
-    errors_line.append(deltaW)
-    new_wiedths.append(weightsValues)
-
-  # print(f"deltaF: {deltaF}")
-  # print(f"new_wiedths: {new_wiedths}")
-  # print(f"inputs: {inputs}")
-  # print(f"outs: {outs}")
-  return final, errors_line, new_wiedths, deltaF
-
-
-def get_error_first_line(weights_to_calculate, deltaF, outs ,inputs):
-  outs = outs[1:]
-  print(f"errorssssss : {weights_to_calculate} {deltaF} {inputs}")
   errors_line = []
   new_wiedths = []
   temp = []
-  # print(f"weights_to_calculate::: {weights_to_calculate}")
+  error1 = 0
+  for a in range(len(output_weidgths)):
+    final = get_x(inputs, output_weidgths[a])
+    error1 = gateToLearn - final
+    print(f"final: {final}")
+    print(f"error: {error1}")
+    outputs.append(final)
+    deltaF = final * ( 1 - final) * error1
+    for i in range(len(inputs)):
+      deltaW = 0.5 * inputs[a] * deltaF
+      weightsValues = output_weidgths[a][i] + deltaW
+      errors_line.append(deltaW)
+      temp.append(weightsValues)
+      if(len(temp) == 4):
+        new_wiedths.append(temp)
+        temp = []
+  return final, errors_line, new_wiedths, deltaF, error1
+
+
+def get_errors_hidden_line(weights_to_calculate, deltaF, outs ,inputs):
+  outs = outs[1:]
+  errors_line = []
+  new_wiedths = []
+  temp = []
 
   for i in range(len(inputs)):
     deltaOc1 = outs[i] * ( 1 - outs[i]) * deltaF
-    print(f"deltaOc1::: {deltaOc1}")
     for j in range(len(weights_to_calculate[i])):
-      # print(f"1212121: {j}")
-      # b = inputs[i][j]
-      # print(f"aaaaa: {b}")
-      print(f"inputs[i]1111111::: {inputs[j]} wwwwwww {weights_to_calculate[i][j]}")
-      deltaW = 0.1 * inputs[j] * deltaOc1
-      print(f"deltaW2::: {deltaW}")
-      print(f"weights_to_calculate[i][j]::: {weights_to_calculate[i][j]}")
+      deltaW = 0.5 * inputs[j] * deltaOc1
       weightsValues = weights_to_calculate[i][j] + deltaW
-      print(f"weightsValues::: {weightsValues}")
       errors_line.append(deltaW)
       temp.append(weightsValues)
-      print(f"temp: {temp}")
       if(len(temp) == 3):
-        print(f"insideeeee::: {weightsValues}")
         new_wiedths.append(temp)
         temp = []
-  # print(f"new_wiedthsssssssssssss: {new_wiedths}")
   return new_wiedths, errors_line
 
-def create_graph(elements,title):  
-  x = np.arange(0, len(elements))
-  y = elements
 
-  fig, ax = plt.subplots()
-  fig.suptitle(title, fontsize=20)
-  # plt.xlabel('xlabel', fontsize=18)
-  # plt.ylabel('ylabel', fontsize=16)
-  ax.plot(x, y)
+def create_graph(elements,inputs):
+  for i in range(len(elements)):
+    x = np.arange(0, len(elements[i]))
+    y = elements[i]
+    plt.plot(x, y, label = inputs[i])
+  plt.legend()
   plt.show()
-
 
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
-  parser.add_argument("-xor", '--orGate',
+  parser.add_argument("-or", '--orGate',
                         help='Ejecutar compuerta OR', action='store_true')
+  parser.add_argument("-and", '--andGate',
+												help='Ejecutar compuerta AND', action='store_true')
+  parser.add_argument("-xor", '--xorGate',
+												help='Ejecutar compuerta XOR', action='store_true')
   parser.add_argument("-n", '--amountPr',
                         help='Ejecutar compuerta OR', action='store_true')
 
   args = parser.parse_args()
-  xorOption = args.orGate
+  orOption = args.orGate
+  andOption = args.andGate
+  xorOPtion = args.xorGate
   gateToLearn = ""
 
   inputs = [
@@ -141,43 +97,39 @@ if __name__ == "__main__":
     [1, 1, 0],
     [1, 1, 1]
   ]
-  inputs2 = [
-    [1, 0, 1]
-  ]
+
   orGateOutput = [0,1,1,1]
   andGateOutput = [0,0,0,1]
   xorGateOutput = [0,1,1,0]
   learning_rate = 0.1
-  if xorOption:
+  if orOption:
+    gateToLearn = orGateOutput
+  elif andOption:
+    gateToLearn = andGateOutput
+  elif xorOPtion:
     gateToLearn = xorGateOutput
 
-  first_line = [weights.first_line_1_wights_values(),weights.first_line_2_wights_values(),weights.second_line_1_wights_values()]
-  outs = [weights.second_line_2_wights_values()]
-  # first_res = first_percep_lin(gateToLearn, inputs)
+  hidden_layer_weidghts = [weights.first_line_1_wights_values(),weights.first_line_2_wights_values(),weights.second_line_1_wights_values()]
+  output_weidgths = [weights.second_line_2_wights_values(),weights.second_line_2_wights_values(),weights.second_line_2_wights_values(),weights.second_line_2_wights_values()]
 
-  # print(first_res)
   resp_total = []
   errs = []
-  for h in range(1000):
-    for i in range(len(inputs2)):
-      print(inputs2[i])
-      
-      second_res = second_percep_lin(inputs2[i], first_line)
+  errs_total = []
+  temp_values = []
+  for i in range(len(inputs)):
+    for h in range(1000):
+      second_res = hidden_layer(inputs[i], hidden_layer_weidghts)
+      third_res, errors_line, new_wei, deltaF, error_to_save = out_layer(gateToLearn[i], second_res, output_weidgths)
+      temp_values.append(third_res)
+      errs.append(error_to_save)
+      output_weidgths = new_wei    
+      hidden_layer_weidghts, errors_line = get_errors_hidden_line(hidden_layer_weidghts, deltaF, second_res, inputs[i])
+    hidden_layer_weidghts = [weights.first_line_1_wights_values(),weights.first_line_2_wights_values(),weights.second_line_1_wights_values()]
+    output_weidgths = [weights.second_line_2_wights_values()]
+    resp_total.append(temp_values)
+    temp_values = []
+    errs_total.append(errs)
+    errs = []
 
-      # print(f"secccccc: {second_res}")
-
-      third_res, errors_line, new_wei, deltaF = third_percep_lin (gateToLearn,second_res,outs)
-
-      # print(f"deltaFssssssss: {deltaF}")
-      resp_total.append(third_res)
-      errs.append(errors_line)
-      print(third_res)
-
-      outs = [new_wei]
-      print(f"outs: {outs}")
-      
-      first_line, errs = get_error_first_line(first_line, deltaF, second_res, inputs2[i])
-      # print(f"first_line111111111111: {first_line}")
-    # get_error
-  create_graph(resp_total, "total")
-  create_graph(errs, "errs")
+  create_graph(resp_total, inputs)
+  create_graph(errs_total, inputs)

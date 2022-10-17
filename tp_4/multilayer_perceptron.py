@@ -6,9 +6,14 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+import random
+
 def get_x(inputs, weights_val):
   x = 0
+  print(f"input: {inputs}" )
+  print(f"weights_val: {weights_val}" )
   for index, input in enumerate(inputs):
+    print(index)
     x += input * weights_val[index]
   real_output = 1 / (1 + math.exp(-x))
   return real_output
@@ -20,6 +25,18 @@ def hidden_layer(inputs, weights_to_use):
     responses = get_x(inputs, weights_to_use[i])
     first_line_outputs.append(responses)
   return first_line_outputs
+
+
+def random_weights(number_of_cells, number_of_entries):
+  amount_entries = int(number_of_cells) * int(number_of_entries)
+  result_arr = []
+  n = 0
+  while n in range(amount_entries):
+    val = random.uniform(-1,1)
+    result_arr.append(val)
+    n += 1
+  print(result_arr)
+  return result_arr
 
 
 def out_layer(gateToLearn, inputs, output_weidgths):
@@ -41,6 +58,7 @@ def out_layer(gateToLearn, inputs, output_weidgths):
 
 
 def get_errors_hidden_line(weights_to_calculate, deltaF, outs ,inputs):
+  print(f"outs: {outs}")
   outs = outs[1:]
   errors_line = []
   new_wiedths = []
@@ -77,6 +95,8 @@ if __name__ == "__main__":
 												help='Ejecutar compuerta XOR', action='store_true')
   parser.add_argument("-n", '--numberOfCels',
                         help='Ejecutar compuerta OR')
+  parser.add_argument("-m", '--numberOfEntriesPerCell',
+                        help='Ejecutar compuerta OR')
 
   args = parser.parse_args()
   orOption = args.orGate
@@ -84,6 +104,7 @@ if __name__ == "__main__":
   xorOPtion = args.xorGate
   gateToLearn = ""
   number_of_cells = args.numberOfCels
+  number_of_entries_per_cells = args.numberOfEntriesPerCell
 
   inputs = [
     [1, 0, 0],
@@ -103,8 +124,8 @@ if __name__ == "__main__":
   elif xorOPtion:
     gateToLearn = xorGateOutput
 
-  hidden_layer_weights = weights.return_all()
-  output_weidgths = weights.out_layer_weights()
+  hidden_layer_weights = random_weights(number_of_cells,number_of_entries_per_cells)
+  output_weidgths = random_weights(1,int(number_of_cells)+1)
 
   resp_total = []
   errs = []
@@ -117,6 +138,7 @@ if __name__ == "__main__":
     if(len(temp_wiehts) == 3):
       splited_weights.append(temp_wiehts)
       temp_wiehts = []
+
   for i in range(len(inputs)):
     for h in range(1000):
       second_res = hidden_layer(inputs[i], splited_weights)
@@ -125,8 +147,8 @@ if __name__ == "__main__":
       errs.append(error_to_save)
       output_weidgths = new_wei    
       splited_weights, errors_line = get_errors_hidden_line(splited_weights, deltaF, second_res, inputs[i])
-    hidden_layer_weights = weights.return_all()
-    output_weidgths = weights.out_layer_weights()
+    hidden_layer_weights = hidden_layer_weights
+    output_weidgths = output_weidgths
     resp_total.append(temp_values)
     temp_values = []
     errs_total.append(errs)

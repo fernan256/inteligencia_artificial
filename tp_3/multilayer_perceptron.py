@@ -111,7 +111,7 @@ if __name__ == "__main__":
   output_weidgths = weights.second_line_2_wights_values()
 
   out_layer_weidghts_graph = [[],[],[],[]]
-  hiddeng_graph = [[],[],[],[],[],[],[],[],[]]
+  hidden_graph = [[],[],[],[],[],[],[],[],[]]
   resp_total = []
   errs = []
   errs_total = []
@@ -136,9 +136,9 @@ if __name__ == "__main__":
   for n in range(len(general_weidths)):
     if m == 9:
       m = 0
-    hiddeng_graph[m].append(general_weidths[n])
+    hidden_graph[m].append(general_weidths[n])
     m += 1
-  create_graph(hiddeng_graph, ["w0","w1","w2","w3","w4","w5","w6","w7","w8"])
+  hidden_graph.extend(out_layer_weidghts_graph)
+  create_graph(hidden_graph, ["w0","w1","w2","w3","w4","w5","w6","w7","w8","w9","w10","w11","w12"])
   create_graph(resp_total, inputs)
   create_graph(errs_total, inputs)
-  create_graph(out_layer_weidghts_graph, ["w9","w10","w11","w12"])

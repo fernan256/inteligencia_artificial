@@ -5,7 +5,10 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+general_weidths = []
+
 def get_x(inputs, weights_val):
+
   x = 0
   for index, input in enumerate(inputs):
     x += input * weights_val[index]
@@ -22,28 +25,24 @@ def hidden_layer(inputs, weidghts_to_use):
 
 
 def out_layer(gateToLearn, inputs, output_weidgths):
-  final = 0
+  Sr = 0
   outputs = []
   errors_line = []
   new_wiedths = []
   temp = []
   error1 = 0
-  for a in range(len(output_weidgths)):
-    final = get_x(inputs, output_weidgths[a])
-    error1 = gateToLearn - final
-    print(f"final: {final}")
-    print(f"error: {error1}")
-    outputs.append(final)
-    deltaF = final * ( 1 - final) * error1
-    for i in range(len(inputs)):
-      deltaW = 0.5 * inputs[a] * deltaF
-      weightsValues = output_weidgths[a][i] + deltaW
-      errors_line.append(deltaW)
-      temp.append(weightsValues)
-      if(len(temp) == 4):
-        new_wiedths.append(temp)
-        temp = []
-  return final, errors_line, new_wiedths, deltaF, error1
+  Sr = get_x(inputs, output_weidgths)
+  error1 = gateToLearn - Sr
+  outputs.append(Sr)
+  deltaF = Sr * ( 1 - Sr) * error1
+  for i in range(len(inputs)):
+    deltaW = 0.1 * inputs[i] * deltaF
+    weightsValues = output_weidgths[i] + deltaW
+    errors_line.append(deltaW)
+    temp.append(weightsValues)
+  new_wiedths.append(temp)
+  temp = []
+  return Sr, errors_line, new_wiedths[0], deltaF, error1
 
 
 def get_errors_hidden_line(weights_to_calculate, deltaF, outs ,inputs):
@@ -51,17 +50,16 @@ def get_errors_hidden_line(weights_to_calculate, deltaF, outs ,inputs):
   errors_line = []
   new_wiedths = []
   temp = []
-
   for i in range(len(inputs)):
     deltaOc1 = outs[i] * ( 1 - outs[i]) * deltaF
     for j in range(len(weights_to_calculate[i])):
-      deltaW = 0.5 * inputs[j] * deltaOc1
+      deltaW = 0.1 * inputs[j] * deltaOc1
       weightsValues = weights_to_calculate[i][j] + deltaW
       errors_line.append(deltaW)
       temp.append(weightsValues)
-      if(len(temp) == 3):
-        new_wiedths.append(temp)
-        temp = []
+      general_weidths.append(weightsValues)
+    new_wiedths.append(temp)
+    temp = []
   return new_wiedths, errors_line
 
 
@@ -110,8 +108,10 @@ if __name__ == "__main__":
     gateToLearn = xorGateOutput
 
   hidden_layer_weidghts = [weights.first_line_1_wights_values(),weights.first_line_2_wights_values(),weights.second_line_1_wights_values()]
-  output_weidgths = [weights.second_line_2_wights_values(),weights.second_line_2_wights_values(),weights.second_line_2_wights_values(),weights.second_line_2_wights_values()]
+  output_weidgths = weights.second_line_2_wights_values()
 
+  out_layer_weidghts_graph = [[],[],[],[]]
+  hiddeng_graph = [[],[],[],[],[],[],[],[],[]]
   resp_total = []
   errs = []
   errs_total = []
@@ -120,16 +120,25 @@ if __name__ == "__main__":
     for h in range(1000):
       second_res = hidden_layer(inputs[i], hidden_layer_weidghts)
       third_res, errors_line, new_wei, deltaF, error_to_save = out_layer(gateToLearn[i], second_res, output_weidgths)
+      out_layer_weidghts_graph[i].append(output_weidgths[i])
       temp_values.append(third_res)
       errs.append(error_to_save)
-      output_weidgths = new_wei    
+      output_weidgths = new_wei
       hidden_layer_weidghts, errors_line = get_errors_hidden_line(hidden_layer_weidghts, deltaF, second_res, inputs[i])
-    hidden_layer_weidghts = [weights.first_line_1_wights_values(),weights.first_line_2_wights_values(),weights.second_line_1_wights_values()]
-    output_weidgths = [weights.second_line_2_wights_values()]
+    hidden_layer_weidghts = [weights.first_line_1_wights_values(),weights.first_line_2_wights_values(),weights.second_line_1_wights_values()] 
+    output_weidgths = weights.second_line_2_wights_values()
     resp_total.append(temp_values)
     temp_values = []
     errs_total.append(errs)
     errs = []
 
+  m = 0
+  for n in range(len(general_weidths)):
+    if m == 9:
+      m = 0
+    hiddeng_graph[m].append(general_weidths[n])
+    m += 1
+  create_graph(hiddeng_graph, ["w0","w1","w2","w3","w4","w5","w6","w7","w8"])
   create_graph(resp_total, inputs)
   create_graph(errs_total, inputs)
+  create_graph(out_layer_weidghts_graph, ["w9","w10","w11","w12"])

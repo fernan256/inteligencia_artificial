@@ -1,5 +1,4 @@
 import argparse
-from ast import arg
 import weights
 import math
 
@@ -8,151 +7,204 @@ import numpy as np
 
 import random
 
-def get_x(inputs, weights_val):
-  x = 0
-  print(f"input: {inputs}" )
-  print(f"weights_val: {weights_val}" )
-  for index, input in enumerate(inputs):
-    print(index)
-    x += input * weights_val[index]
-  real_output = 1 / (1 + math.exp(-x))
-  return real_output
+
+def activation_function_calculation(inputs, weights_val):
+    x = 0
+    for index, input in enumerate(inputs):
+      x += input * weights_val[index]
+    real_output = 1 / (1 + math.exp(-x))
+    return real_output
 
 
-def hidden_layer(inputs, weights_to_use):
-  first_line_outputs = [1]
-  for i in range(len(weights_to_use)):
-    responses = get_x(inputs, weights_to_use[i])
-    first_line_outputs.append(responses)
-  return first_line_outputs
+def back_propagation_calculation(gateToLearn, inputs, hidden_layer_weights, output_calculated_weigths, output_weigths, real_output, lerning_rate, all_time_weights_h, all_time_weights_o):
+    error = gateToLearn - real_output
+    print(f"error: {error}")
+    print(f"real_output: {real_output}")
+    delta_f = real_output * (1 - real_output) * error
+    # print(f"delta_f: {delta_f}")
+   
+    for i in range(len(hidden_layer_weights)):
+        activation_hidden = output_calculated_weigths[1:]
+        delta_f_hidden = activation_hidden[i] * (1 - activation_hidden[i]) * delta_f
+        for j in range(len(hidden_layer_weights[i])):
+            delta_w_h = lerning_rate * inputs[j] * delta_f_hidden
+            hidden_layer_weights[i][j] = hidden_layer_weights[i][j] + delta_w_h
+            # print(hidden_layer_weights[i][j])
+            all_time_weights_h.append(hidden_layer_weights[i][j])
+    
+    for k in range(len(output_calculated_weigths)):
+        # print(f"output_calculated_weidgths[k]: {output_calculated_weigths[k]}")
+        delta_w_o = lerning_rate * output_calculated_weigths[k] * delta_f
+        # print(f"delta_w_o: {delta_w_o}")
+        # print(f"output_weidgths[k]: {output_weigths[k]}")
+        output_weigths[k] = output_weigths[k] + delta_w_o
+        # print(f"output_weidgths[k]: {output_weigths[k]}")
+        all_time_weights_o.append(output_weigths[k])
+    # print(f"hidden_layer_weidghts: {hidden_layer_weights}")
+    # print(f"output_weidgths: {output_weigths}")
+
+    # print(f"all_time_weights: {all_time_weights_o}")
+    return hidden_layer_weights, output_weigths, error, real_output, all_time_weights_h, all_time_weights_o
+
+
+def historical_values(all_time_values, hidden_graph_values, number_elements):
+    m = 0
+    for n in range(len(all_time_values)):
+      if m == number_elements:
+        m = 0
+      hidden_graph_values[m].append(all_time_values[n])
+      m += 1
+
+    return hidden_graph_values
 
 
 def random_weights(number_of_cells, number_of_entries):
-  amount_entries = int(number_of_cells) * int(number_of_entries)
-  result_arr = []
-  n = 0
-  while n in range(amount_entries):
-    val = random.uniform(-1,1)
-    result_arr.append(val)
-    n += 1
-  print(result_arr)
-  return result_arr
+    amount_entries = int(number_of_cells) * int(number_of_entries)
+    result_arr = []
+    n = 0
+    while n in range(amount_entries):
+      val = random.uniform(-1,1)
+      result_arr.append(val)
+      n += 1
+    print(result_arr)
+    return result_arr
 
 
-def out_layer(gateToLearn, inputs, output_weidgths):
-  Sr = 0
-  outputs = []
-  errors_line = []
-  new_wiedths = []
-  error1 = 0
-  Sr = get_x(inputs, output_weidgths)
-  error1 = gateToLearn - Sr
-  deltaF = Sr * ( 1 - Sr) * error1
-  for a in range(len(inputs)):
-    outputs.append(Sr)
-    deltaW = 0.5 * inputs[a] * deltaF
-    weightsValues = output_weidgths[a] + deltaW
-    errors_line.append(deltaW)
-    new_wiedths.append(weightsValues)
-  return Sr, errors_line, new_wiedths, deltaF, error1
-
-
-def get_errors_hidden_line(weights_to_calculate, deltaF, outs ,inputs):
-  print(f"outs: {outs}")
-  outs = outs[1:]
-  errors_line = []
-  new_wiedths = []
-  temp = []
-
-  for i in range(len(inputs)):
-    deltaOc1 = outs[i] * ( 1 - outs[i]) * deltaF
-    for j in range(len(weights_to_calculate[i])):
-      deltaW = 0.5 * inputs[j] * deltaOc1
-      weightsValues = weights_to_calculate[i][j] + deltaW
-      errors_line.append(deltaW)
-      temp.append(weightsValues)
-    new_wiedths.append(temp)
-    temp = []
-  return new_wiedths, errors_line
+def check_error(errorList, tolerance):
+    sum_err = 0
+    for i in range(len(errorList)):
+        for x in errorList[i]:
+          sum_err += abs(x)
+        final_err_per_n = sum_err / len(errorList[i])
+    final_err = final_err_per_n / len(errorList)
+    print(f"final_err: {final_err}")
+    if final_err <= tolerance:
+      return True
 
 
 def create_graph(elements,inputs):
-  for i in range(len(elements)):
-    x = np.arange(0, len(elements[i]))
-    y = elements[i]
-    plt.plot(x, y, label = inputs[i])
-  plt.legend()
-  plt.show()
+    for i in range(len(elements)):
+      x = np.arange(0, len(elements[i]))
+      y = elements[i]
+      plt.plot(x, y, label = inputs[i])
+    plt.legend()
+    plt.show()
 
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
-  parser.add_argument("-or", '--orGate',
-                        help='Ejecutar compuerta OR', action='store_true')
-  parser.add_argument("-and", '--andGate',
-												help='Ejecutar compuerta AND', action='store_true')
-  parser.add_argument("-xor", '--xorGate',
-												help='Ejecutar compuerta XOR', action='store_true')
-  parser.add_argument("-n", '--numberOfCels',
-                        help='Ejecutar compuerta OR')
-  parser.add_argument("-m", '--numberOfEntriesPerCell',
-                        help='Ejecutar compuerta OR')
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-or", '--orGate',
+                          help='Ejecutar compuerta OR', action='store_true')
+    parser.add_argument("-and", '--andGate',
+                          help='Ejecutar compuerta AND', action='store_true')
+    parser.add_argument("-xor", '--xorGate',
+                          help='Ejecutar compuerta XOR', action='store_true')
+    parser.add_argument("-n", '--numberOfCels',
+                          help='Ejecutar compuerta OR')
+    parser.add_argument("-m", '--numberOfEntriesPerCell',
+                          help='Ejecutar compuerta OR')
 
-  args = parser.parse_args()
-  orOption = args.orGate
-  andOption = args.andGate
-  xorOPtion = args.xorGate
-  gateToLearn = ""
-  number_of_cells = args.numberOfCels
-  number_of_entries_per_cells = args.numberOfEntriesPerCell
+    args = parser.parse_args()
+    orOption = args.orGate
+    andOption = args.andGate
+    xorOPtion = args.xorGate
+    number_of_cells = args.numberOfCels
+    number_of_entries_per_cells = args.numberOfEntriesPerCell
+    gateToLearn = ""
+    
 
-  inputs = [
-    [1, 0, 0],
-    [1, 0, 1],
-    [1, 1, 0],
-    [1, 1, 1]
-  ]
+    inputs = [
+      [1, 0, 0],
+      [1, 0, 1],
+      [1, 1, 0],
+      [1, 1, 1]
+    ]
 
-  orGateOutput = [0,1,1,1]
-  andGateOutput = [0,0,0,1]
-  xorGateOutput = [0,1,1,0]
-  learning_rate = 0.1
-  if orOption:
-    gateToLearn = orGateOutput
-  elif andOption:
-    gateToLearn = andGateOutput
-  elif xorOPtion:
-    gateToLearn = xorGateOutput
+    orGateOutput = [0,1,1,1]
+    andGateOutput = [0,0,0,1]
+    xorGateOutput = [0,1,1,0]
+    learning_rate = 0.1
+    if orOption:
+      gateToLearn = orGateOutput
+    elif andOption:
+      gateToLearn = andGateOutput
+    elif xorOPtion:
+      gateToLearn = xorGateOutput
 
-  hidden_layer_weights = random_weights(number_of_cells,number_of_entries_per_cells)
-  output_weidgths = random_weights(1,int(number_of_cells)+1)
+    hidden_layer_weights = random_weights(number_of_cells, number_of_entries_per_cells)
+    output_weigths = random_weights(1, int(number_of_cells) + 1)
 
-  resp_total = []
-  errs = []
-  errs_total = []
-  temp_values = []
-  splited_weights = []
-  temp_wiehts = []
-  for n in range(len(hidden_layer_weights)):
-    temp_wiehts.append(hidden_layer_weights[n])
-    if(len(temp_wiehts) == 3):
-      splited_weights.append(temp_wiehts)
-      temp_wiehts = []
+    iterations = 0
+    max_iter = 10000
+    hidden_layer_res = []
+    lerning_rate = 0.4
+    tolerance = 0.1
+    errs_total = []
+    real_output_total = []
+    hidden_graph_h = []
+    hidden_graph_o = []
+    all_time_weights_h = []
+    all_time_weights_o = []
+    splited_weights = []
+    temp_weigths = []
 
-  for i in range(len(inputs)):
-    for h in range(1000):
-      second_res = hidden_layer(inputs[i], splited_weights)
-      third_res, errors_line, new_wei, deltaF, error_to_save = out_layer(gateToLearn[i], second_res, output_weidgths)
-      temp_values.append(third_res)
-      errs.append(error_to_save)
-      output_weidgths = new_wei    
-      splited_weights, errors_line = get_errors_hidden_line(splited_weights, deltaF, second_res, inputs[i])
-    hidden_layer_weights = hidden_layer_weights
-    output_weidgths = output_weidgths
-    resp_total.append(temp_values)
-    temp_values = []
-    errs_total.append(errs)
-    errs = []
+    hidden_graph = []
 
-  create_graph(resp_total, inputs)
-  create_graph(errs_total, inputs)
+    weights_legends = []
+
+    all_time_weights_h.extend(hidden_layer_weights)
+    all_time_weights_o.extend(output_weigths)
+
+    for i in range(len(hidden_layer_weights)):
+        hidden_graph_h.append([])
+
+    for i in range(len(output_weigths)):
+        hidden_graph_o.append([])
+
+    temp_weights_legends = []
+    temp_weights_legends.extend(hidden_graph_h)
+    temp_weights_legends.extend(hidden_graph_o)
+
+    for i in range(len(temp_weights_legends)):
+        weights_legends.append(f"w{i}")
+
+    for i in range(len(inputs)):
+        errs_total.append([])
+
+    for i in range(len(inputs)):
+        real_output_total.append([])
+
+    for n in range(len(hidden_layer_weights)):
+        temp_weigths.append(hidden_layer_weights[n])
+        if(len(temp_weigths) == 3):
+          splited_weights.append(temp_weigths)
+          temp_weigths = []
+
+    while iterations < max_iter:
+        for i in range(len(inputs)):
+            print("Calculo salidas capa oculta")
+            output_layer = [1]
+            for j in range(len(splited_weights)):
+              hidden_layer_res = activation_function_calculation(inputs[i], splited_weights[j])
+              output_layer.append(hidden_layer_res)
+            
+            output_activation_res = activation_function_calculation(output_layer, output_weigths)
+
+            splited_weights, output_weigths, error, real_output, all_time_weights_h, all_time_weights_o = back_propagation_calculation(gateToLearn[i], inputs[i], splited_weights, output_layer, output_weigths, output_activation_res, lerning_rate, all_time_weights_h, all_time_weights_o)
+            errs_total[i].append(error)
+            real_output_total[i].append(real_output)
+        err = check_error(errs_total, tolerance)
+        print(f"err: {err}")
+        if err:
+          break
+            
+        iterations += 1
+    print(f"Iteraciones totales: {iterations}")
+    hidden_graph_h = historical_values(all_time_weights_h, hidden_graph_h, 9)
+    hidden_graph_o = historical_values(all_time_weights_o, hidden_graph_o, 4)
+    hidden_graph.extend(hidden_graph_h)
+    hidden_graph.extend(hidden_graph_o)
+
+    create_graph(errs_total, inputs)
+    create_graph(hidden_graph, weights_legends)
+    # create_graph(real_output_total, inputs)

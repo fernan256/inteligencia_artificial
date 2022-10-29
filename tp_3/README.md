@@ -3,20 +3,20 @@
 ## Trabajo Practico numero 3
 
 ### Modelo del perceptron multicapa
-#### 1. Programar un perceptron para que se comporte como una compuerta AND
+#### 1. Programar un perceptron multicapa para que se comporte como cualquiera de las 3 compuertas
 
 ### Uso
 
 #### 1- Ejecutar OR
 ```
-python perceptron.py -or
+python multilayer_perceptron.py -or
 ```
 #### 2- Ejecutar AND
 ```
-python perceptron.py -and
+python multilayer_perceptron.py -and
 ```
 
 #### 3- Ejecutar XOR
 ```
-python perceptron.py -xor
+python multilayer_perceptron.py -xor
 ```

@@ -113,6 +113,7 @@ if __name__ == "__main__":
     all_time_weights_o = []
 
     hidden_graph = []
+    weights_legends = []
     
     for i in range(len(hidden_layer_weights)):
         for j in range(len(hidden_layer_weights)):
@@ -136,12 +137,18 @@ if __name__ == "__main__":
             real_output_total[i].append(real_output)
             
         iterations += 1
-    
+
+    for i in range(len(hidden_graph_h)):
+        weights_legends.append(f"w{i}")
+
+    for i in range(len(hidden_graph_o)):
+        weights_legends.append(f"w1{i}")
+
     hidden_graph_h = historical_values(all_time_weights_h, hidden_graph_h, 9)
     hidden_graph_o = historical_values(all_time_weights_o, hidden_graph_o, 4)
     hidden_graph.extend(hidden_graph_h)
     hidden_graph.extend(hidden_graph_o)
 
     create_graph(errs_total, inputs)
-    create_graph(hidden_graph, ["w0","w1","w2","w3","w4","w5","w6","w7","w8","w9","w10","w11","w12"])
+    create_graph(hidden_graph, weights_legends)
     # create_graph(real_output_total, inputs)

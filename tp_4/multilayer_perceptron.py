@@ -66,7 +66,6 @@ def random_weights(number_of_cells, number_of_entries):
       val = random.uniform(-1,1)
       result_arr.append(val)
       n += 1
-    print(result_arr)
     return result_arr
 
 

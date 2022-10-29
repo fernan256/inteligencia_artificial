@@ -42,8 +42,6 @@ def training(desired_ouput, Lr, inputs, weights, errors, all_time_errors, all_ti
     return errors, weights, real_output_response, all_time_errors, all_time_real_outputs, all_time_weights
 
 
-
-
 def create_graph(elements, inputs):
     for i in range(len(elements)):
       x = np.arange(0, len(elements[i]))

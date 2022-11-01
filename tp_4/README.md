@@ -9,14 +9,5 @@
 
 #### 1- Ejecutar OR
 ```
-python perceptron.py -or -n 3
-```
-#### 2- Ejecutar AND
-```
-python perceptron.py -and -n 3
-```
-
-#### 3- Ejecutar XOR
-```
-python perceptron.py -xor -n 3
+python multilayer_perceptron.py -xor -n 100 -m 3
 ```

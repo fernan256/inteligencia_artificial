@@ -22,7 +22,7 @@ def back_propagation_calculation(gateToLearn, inputs, hidden_layer_weights, outp
     print(f"real_output: {real_output}")
     delta_f = real_output * (1 - real_output) * error
     # print(f"delta_f: {delta_f}")
-   
+
     for i in range(len(hidden_layer_weights)):
         activation_hidden = output_calculated_weigths[1:]
         delta_f_hidden = activation_hidden[i] * (1 - activation_hidden[i]) * delta_f
@@ -31,7 +31,7 @@ def back_propagation_calculation(gateToLearn, inputs, hidden_layer_weights, outp
             hidden_layer_weights[i][j] = hidden_layer_weights[i][j] + delta_w_h
             # print(hidden_layer_weights[i][j])
             all_time_weights_h.append(hidden_layer_weights[i][j])
-    
+
     for k in range(len(output_calculated_weigths)):
         # print(f"output_calculated_weidgths[k]: {output_calculated_weigths[k]}")
         delta_w_o = lerning_rate * output_calculated_weigths[k] * delta_f
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     number_of_cells = args.numberOfCels
     number_of_entries_per_cells = args.numberOfEntriesPerCell
     gateToLearn = ""
-    
+
 
     inputs = [
       [1, 0, 0],
@@ -122,7 +122,6 @@ if __name__ == "__main__":
     orGateOutput = [0,1,1,1]
     andGateOutput = [0,0,0,1]
     xorGateOutput = [0,1,1,0]
-    learning_rate = 0.1
     if orOption:
       gateToLearn = orGateOutput
     elif andOption:
@@ -136,8 +135,8 @@ if __name__ == "__main__":
     iterations = 0
     max_iter = 10000
     hidden_layer_res = []
-    lerning_rate = 0.4
-    tolerance = 0.1
+    lerning_rate = 0.1
+    tolerance = 0.2
     errs_total = []
     real_output_total = []
     hidden_graph_h = []
@@ -175,7 +174,7 @@ if __name__ == "__main__":
 
     for n in range(len(hidden_layer_weights)):
         temp_weigths.append(hidden_layer_weights[n])
-        if(len(temp_weigths) == 3):
+        if(len(temp_weigths) == number_of_entries_per_cells):
           splited_weights.append(temp_weigths)
           temp_weigths = []
 
@@ -186,17 +185,19 @@ if __name__ == "__main__":
             for j in range(len(splited_weights)):
               hidden_layer_res = activation_function_calculation(inputs[i], splited_weights[j])
               output_layer.append(hidden_layer_res)
-            
+
             output_activation_res = activation_function_calculation(output_layer, output_weigths)
 
             splited_weights, output_weigths, error, real_output, all_time_weights_h, all_time_weights_o = back_propagation_calculation(gateToLearn[i], inputs[i], splited_weights, output_layer, output_weigths, output_activation_res, lerning_rate, all_time_weights_h, all_time_weights_o)
+
+            print(f"errorrrrrrrrrrrrrrrrr: {error}")
             errs_total[i].append(error)
             real_output_total[i].append(real_output)
         err = check_error(errs_total, tolerance)
         print(f"err: {err}")
         if err:
           break
-            
+
         iterations += 1
     print(f"Iteraciones totales: {iterations}")
     hidden_graph_h = historical_values(all_time_weights_h, hidden_graph_h, 9)
@@ -205,5 +206,5 @@ if __name__ == "__main__":
     hidden_graph.extend(hidden_graph_o)
 
     create_graph(errs_total, inputs)
-    create_graph(hidden_graph, weights_legends)
+    # create_graph(hidden_graph, weights_legends)
     # create_graph(real_output_total, inputs)
